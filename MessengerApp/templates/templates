@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход в мессенджер</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .toggle-form {
+            text-align: center;
+            margin-top: 15px;
+            color: #007bff;
+            cursor: pointer;
+        }
+        .toggle-form:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container" id="loginForm">
+        <h2>Вход</h2>
+        <form id="login" onsubmit="submitForm(event, 'login')">
+            <input type="text" id="username_login" placeholder="Имя пользователя" required>
+            <input type="password" id="password_login" placeholder="Пароль" required>
+            <button type="submit">Войти</button>
+        </form>
+        <div class="toggle-form" onclick="showForm('register')">Нет аккаунта? Зарегистрироваться</div>
+    </div>
+
+    <div class="form-container" id="registerForm" style="display: none;">
+        <h2>Регистрация</h2>
+        <form id="register" onsubmit="submitForm(event, 'register')">
+            <input type="text" id="username_register" placeholder="Имя пользователя" required>
+            <input type="password" id="password_register" placeholder="Пароль" required>
+            <button type="submit">Зарегистрироваться</button>
+        </form>
+        <div class="toggle-form" onclick="showForm('login')">Уже есть аккаунт? Войти</div>
+    </div>
+
+    <script>
+        function showForm(form) {
+            document.getElementById('loginForm').style.display = form === 'login' ? 'block' : 'none';
+            document.getElementById('registerForm').style.display = form === 'register' ? 'block' : 'none';
+        }
+
+        function submitForm(event, type) {
+            event.preventDefault();
+            const username = type === 'login' ?
+                document.getElementById('username_login').value :
+                document.getElementById('username_register').value;
+            const password = type === 'login' ?
+                document.getElementById('password_login').value :
+                document.getElementById('password_register').value;
+
+            fetch('/auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password, type })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/chat?username=' + encodeURIComponent(username);
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(err => {
+                alert('Ошибка подключения к серверу');
+                console.error(err);
+            });
+        }
+    </script>
+</body>
+</html>

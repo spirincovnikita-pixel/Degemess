@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>DEGE - Чат</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+        }
+        body {
+            background: #0A0E17;
+            color: #E0E0FF;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 300px;
+            background: linear-gradient(180deg, #121524, #0F1220);
+            border-right: 1px solid #2A2F45;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .sidebar-header {
+            padding: 20px;
+            background: linear-gradient(90deg, #4A00E0, #8E2DE2);
+            text-align: center;
+            font-size: 1.4em;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+            letter-spacing: 0.5px;
+        }
+        .friends-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            scrollbar-width: thin;
+            scrollbar-color: #4A00E0 #121524;
+        }
+        .friends-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .friends-container::-webkit-scrollbar-track {
+            background: #0F1220;
+        }
+        .friends-container::-webkit-scrollbar-thumb {
+            background: #4A00E0;
+            border-radius: 3px;
+        }
+        .friend, .group, .channel {
+            padding: 12px 15px;
+            border-bottom: 1px solid #2A2F45;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .friend:hover, .group:hover, .channel:hover {
+            background: rgba(74, 0, 224, 0.15);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+        .friend::before, .group::before, .channel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: transparent;
+            transition: background 0.3s;
+        }
+        .friend:hover::before, .group:hover::before, .channel:hover::before {
+            background: #8E2DE2;
+        }
+        .status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 6px rgba(74, 0, 224, 0.6);
+        }
+        .status.online {
+            background: #00D2FF;
+            animation: pulse 1.5s infinite;
+        }
+        .status.offline {
+            background: #666;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+        .add-friend {
+            padding: 15px;
+            background: #0F1220;
+            border-top: 1px solid #2A2F45;
+        }
+        .add-friend input {
+            width: 100%;
+            padding: 11px;
+            background: #1A1E2C;
+            border: 1px solid #3A3F55;
+            border-radius: 8px;
+            color: #E0E0FF;
+            font-size: 0.95em;
+            margin-bottom: 8px;
+            transition: border 0.2s;
+        }
+        .add-friend input:focus {
+            outline: none;
+            border-color: #8E2DE2;
+            box-shadow: 0 0 0 2px rgba(142, 45, 226, 0.2);
+        }
+        .add-friend button {
+            width: 100%;
+            padding: 11px;
+            background: linear-gradient(90deg, #4A00E0, #8E2DE2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 500;
+            transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(74, 0, 224, 0.3);
+            margin-bottom: 5px;
+        }
+        .add-friend button:hover {
+            background: linear-gradient(90deg, #3A00B0, #7A1DC0);
+            transform: translateY(-1px);
+        }
+
+        .chat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0C101B;
+        }
+        .chat-header {
+            padding: 15px;
+            background: linear-gradient(90deg, #1A1F30, #121524);
+            color: #FFFFFF;
+            font-size: 1.2em;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #2A2F45;
+        }
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .message-container {
+            max-width: 70%;
+            display: flex;
+            flex-direction: column;
+        }
+        .message {
+            padding: 12px 16px;
+            border-radius: 14px;
+            font-size: 1em;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        .message.sent {
+            background: linear-gradient(90deg, #4A00E0, #8E2DE2);
+            color: white;
+            align-self: flex-end;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+        .message.received {
+            background: rgba(255, 255, 255, 0.08);
+            color: #E0E0FF;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        .message strong {
+            font-size: 0.85em;
+            color: #8A8AFF;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .input-area {
+            display: flex;
+            padding: 12px 10px;
+            background: #0F1220;
+            border-top: 1px solid #2A2F45;
+        }
+        #message-input {
+            flex: 1;
+            padding: 13px;
+            background: #1A1E2C;
+            border: 1px solid #3A3F55;
+            border-radius: 10px;
+            color: #E0E0FF;
+            font-size: 1em;
+            transition: border 0.2s;
+        }
+        #message-input:focus {
+            outline: none;
+            border-color: #8E2DE2;
+            box-shadow: 0 0 0 2px rgba(142, 45, 226, 0.2);
+        }
+        .send-btn {
+            margin-left: 10px;
+            padding: 0 24px;
+            background: linear-gradient(90deg, #4A00E0, #8E2DE2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(74, 0, 224, 0.3);
+        }
+        .send-btn:hover {
+            background: linear-gradient(90deg, #3A00B0, #7A1DC0);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">DEGE - Чат</div>
+        <div class="friends-container" id="friends-list">
+            <!-- Друзья, группы и каналы -->
+        </div>
+        <div class="add-friend">
+            <input type="text" id="friend-username" placeholder="Имя пользователя">
+            <button onclick="addFriend()">Добавить в друзья</button>
+
+            <input type="text" id="group-name" placeholder="Название группы" style="margin-top: 10px;">
+            <button onclick="createGroup()">Создать группу</button>
+
+            <input type="text" id="channel-name" placeholder="Название канала" style="margin-top: 10px;">
+            <button onclick="createChannel()">Создать канал</button>
+        </div>
+    </div>
+
+    <div class="chat">
+        <div class="chat-header" id="chat-header">Выберите чат</div>
+        <div class="messages" id="messages"></div>
+        <div class="input-area">
+            <input type="text" id="message-input" placeholder="Напишите сообщение..." onkeypress="if(event.key==='Enter') sendMessage()">
+            <button class="send-btn" onclick="sendMessage()">Отправить</button>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const current_user = urlParams.get('username');
+        const socket = io();
+
+        let selected_friend = null;
+        let current_group = null;
+        let current_channel = null;
+        let userStatus = {};
+
+        // Инициализация
+        socket.emit('login', { username: current_user });
+
+        function loadFriends() {
+            fetch(`/friends/${current_user}`)
+                .then(res => res.json())
+                .then(friends => {
+                    const list = document.getElementById('friends-list');
+                    Array.from(list.children).forEach(child => {
+                        if (!child.dataset.channel) child.remove();
+                    });
+                    friends.forEach(friend => {
+                        const div = document.createElement('div');
+                        div.className = 'friend';
+                        div.dataset.username = friend;
+                        div.innerHTML = `
+                            <span class="status ${userStatus[friend] === 'online' ? 'online' : 'offline'}" id="status-${friend}"></span>
+                            <span>${friend}</span>
+                        `;
+                        div.onclick = () => openChat(friend);
+                        list.appendChild(div);
+                    });
+                    loadGroups();
+                });
+        }
+
+        function loadGroups() {
+            fetch(`/groups/${current_user}`)
+                .then(res => res.json())
+                .then(groups => {
+                    const list = document.getElementById('friends-list');
+                    Array.from(list.children).forEach(child => {
+                        if (child.dataset.group) child.remove();
+                    });
+                    for (const [gid, group] of Object.entries(groups)) {
+                        const div = document.createElement('div');
+                        div.className = 'group';
+                        div.dataset.group = gid;
+                        div.innerHTML = `
+                            <span>👥</span>
+                            <span>${group.name} <small>(${group.members.length})</small></span>
+                        `;
+                        div.onclick = () => openGroupChat(gid, group);
+                        list.appendChild(div);
+                    }
+                    loadChannels();
+                });
+        }
+
+        function loadChannels() {
+            fetch('/channels')
+                .then(res => res.json())
+                .then(channels => {
+                    const list = document.getElementById('friends-list');
+                    Array.from(list.children).forEach(child => {
+                        if (child.dataset.channel) child.remove();
+                    });
+                    for (const [cid, channel] of Object.entries(channels)) {
+                        if (channel.creator === current_user) {
+                            const div = document.createElement('div');
+                            div.className = 'channel';
+                            div.dataset.channel = cid;
+                            div.innerHTML = `
+                                <span>📣</span>
+                                <span>${channel.name} <small>(канал)</small></span>
+                            `;
+                            div.onclick = () => openChannelChat(cid, channel);
+                            list.appendChild(div);
+                        }
+                    }
+                });
+        }
+
+        function addFriend() {
+            const name = document.getElementById('friend-username').value.trim();
+            if (!name) return alert('Введите имя');
+
+            fetch('/add_friend', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ current_user, friend_name: name })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    document.getElementById('friend-username').value = '';
+                    loadFriends();
+                } else {
+                    alert(data.message);
+                }
+            });
+        }
+
+        function createGroup() {
+            const button = document.querySelector('#friends-list + .add-friend button:nth-of-type(2)');
+            const name = document.getElementById('group-name').value.trim();
+            if (!name) return alert('Введите название');
+
+            button.disabled = true;
+            button.textContent = 'Создаём...';
+
+            fetch('/create_group', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ creator: current_user, name })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('group-name').value = '';
+                    loadGroups();
+                } else {
+                    alert(data.message);
+                }
+            })
+            .finally(() => {
+                button.disabled = false;
+                button.textContent = 'Создать группу';
+            });
+        }
+
+        function createChannel() {
+            const button = document.querySelector('#friends-list + .add-friend button:nth-of-type(3)');
+            const name = document.getElementById('channel-name').value.trim();
+            if (!name) return alert('Введите название канала');
+
+            button.disabled = true;
+            button.textContent = 'Создаём...';
+
+            fetch('/create_channel', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ creator: current_user, name })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('channel-name').value = '';
+                    loadChannels();
+                    alert(`Канал «${data.channel.name}» создан`);
+                } else {
+                    alert(data.message);
+                }
+            })
+            .finally(() => {
+                button.disabled = false;
+                button.textContent = 'Создать канал';
+            });
+        }
+
+        function openChat(friend) {
+            selected_friend = friend;
+            current_group = null;
+            current_channel = null;
+            document.getElementById('chat-header').textContent = friend;
+            loadMessages(friend);
+        }
+
+        function openGroupChat(groupId, group) {
+            current_group = groupId;
+            selected_friend = null;
+            current_channel = null;
+            document.getElementById('chat-header').textContent = group.name;
+            loadGroupMessages(groupId);
+        }
+
+                function openChannelChat(channelId, channel) {
+            current_channel = channelId;
+            selected_friend = null;
+            current_group = null;
+            document.getElementById('chat-header').textContent = channel.name + ' (канал)';
+            document.getElementById('messages').innerHTML = '<div style="color: #888; font-size: 0.9em; text-align: center; margin-top: 20px;">💬 Сообщения в канале скоро появятся</div>';
+        }
+
+        function loadMessages(friend) {
+            const key = [current_user, friend].sort().join('-');
+            fetch(`/messages/${current_user}/${friend}`)
+                .then(res => res.json())
+                .then(messages => {
+                    const container = document.getElementById('messages');
+                    container.innerHTML = '';
+                    messages.forEach(msg => {
+                        const isSent = msg.sender === current_user;
+                        const div = document.createElement('div');
+                        div.className = 'message-container';
+                        div.innerHTML = `
+                            <div class="message ${isSent ? 'sent' : 'received'}">
+                                ${isSent ? `<strong>${msg.sender}</strong>` : ''}
+                                ${msg.message}
+                            </div>
+                        `;
+                        container.appendChild(div);
+                    });
+                    container.scrollTop = container.scrollHeight;
+                });
+        }
+
+        function loadGroupMessages(groupId) {
+            fetch(`/messages/group/${groupId}`)
+                .then(res => res.json())
+                .then(messages => {
+                    const container = document.getElementById('messages');
+                    container.innerHTML = '';
+                    messages.forEach(msg => {
+                        const isSent = msg.sender === current_user;
+                        const div = document.createElement('div');
+                        div.className = 'message-container';
+                        div.innerHTML = `
+                            <div class="message ${isSent ? 'sent' : 'received'}">
+                                <strong>${msg.sender}</strong>
+                                ${msg.message}
+                            </div>
+                        `;
+                        container.appendChild(div);
+                    });
+                    container.scrollTop = container.scrollHeight;
+                });
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('message-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const timestamp = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+
+            if (selected_friend) {
+                const data = {
+                    sender: current_user,
+                    receiver: selected_friend,
+                    message: message,
+                    timestamp: timestamp
+                };
+
+                socket.emit('send_message', data);
+                input.value = '';
+                loadMessages(selected_friend);
+            }
+            else if (current_group) {
+                const data = {
+                    sender: current_user,
+                    group_id: current_group,
+                    message: message,
+                    timestamp: timestamp
+                };
+
+                socket.emit('send_group_message', data);
+                input.value = '';
+                loadGroupMessages(current_group);
+            }
+            else if (current_channel) {
+                alert('Отправка сообщений в канал пока не поддерживается.');
+                input.value = '';
+            }
+            else {
+                alert('Выберите чат');
+            }
+        }
+
+        // Обновление статуса пользователей
+        socket.on('user_status', (data) => {
+            userStatus[data.user] = data.status;
+            const statusEl = document.getElementById(`status-${data.user}`);
+            if (statusEl) {
+                statusEl.className = `status ${data.status}`;
+            }
+            loadFriends();
+        });
+
+        socket.on('friend_added', (data) => {
+            loadFriends();
+        });
+
+        socket.on('group_created', (data) => {
+            loadGroups();
+        });
+
+        socket.on('group_updated', (data) => {
+            loadGroups();
+        });
+
+        socket.on('group_removed', (data) => {
+            if (current_group === data.group_id) {
+                document.getElementById('chat-header').textContent = 'Чат закрыт';
+                document.getElementById('messages').innerHTML = '<div style="color: #888; text-align: center; margin-top: 20px;">Вы были удалены из группы</div>';
+                current_group = null;
+            }
+            loadGroups();
+        });
+
+        socket.on('receive_message', (data) => {
+            if ((selected_friend === data.sender && current_user === data.receiver) ||
+                (selected_friend === data.receiver && current_user === data.sender)) {
+                loadMessages(selected_friend);
+            }
+        });
+
+        socket.on('receive_group_message', (data) => {
+            if (current_group === data.group_id) {
+                loadGroupMessages(current_group);
+            }
+        });
+
+        socket.on('channel_created', (data) => {
+            loadChannels();
+        });
+
+        // Загружаем всё при старте
+        loadFriends();
+
+        // Периодическая проверка статуса (раз в 10 сек)
+        setInterval(() => {
+            fetch(`/friends/${current_user}`).then(() => {}); // Просто чтобы держать сессию
+        }, 10000);
+    </script>
+</body>
+</html>

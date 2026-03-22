@@ -1,0 +1,83 @@
+{
+    "group_1": {
+        "name": "лебеди",
+        "creator": "В",
+        "members": [
+            "В",
+            "Ы"
+        ],
+        "admins": [
+            "В"
+        ],
+        "created_at": "00:03"
+    },
+    "group_2": {
+        "name": "петухи",
+        "creator": "Феня",
+        "members": [
+            "Феня",
+            "Катя"
+        ],
+        "admins": [
+            "Феня"
+        ],
+        "created_at": "00:16"
+    },
+    "group_3": {
+        "name": "Братья Славяне",
+        "creator": "Vladimir Putin",
+        "members": [
+            "Vladimir Putin",
+            "Kim Chen In",
+            "Donald Trump"
+        ],
+        "admins": [
+            "Vladimir Putin"
+        ],
+        "created_at": "10:06"
+    },
+    "group_4": {
+        "name": "1",
+        "creator": "Durov",
+        "members": [
+            "Durov"
+        ],
+        "admins": [
+            "Durov"
+        ],
+        "created_at": "15:21"
+    },
+    "group_5": {
+        "name": "Фенч",
+        "creator": "Durov",
+        "members": [
+            "Durov"
+        ],
+        "admins": [
+            "Durov"
+        ],
+        "created_at": "15:24"
+    },
+    "group_6": {
+        "name": "в",
+        "creator": "Durov",
+        "members": [
+            "Durov"
+        ],
+        "admins": [
+            "Durov"
+        ],
+        "created_at": "17:28"
+    },
+    "group_7": {
+        "name": "2",
+        "creator": "Durov",
+        "members": [
+            "Durov"
+        ],
+        "admins": [
+            "Durov"
+        ],
+        "created_at": "17:35"
+    }
+}

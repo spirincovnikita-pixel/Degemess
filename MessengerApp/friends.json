@@ -1,0 +1,62 @@
+{
+    "Ы": {
+        "friends": [
+            "В"
+        ]
+    },
+    "В": {
+        "friends": [
+            "Ы",
+            "Durov"
+        ]
+    },
+    "Durov": {
+        "friends": [
+            "Феня",
+            "В",
+            "Катя",
+            "Ал"
+        ]
+    },
+    "Феня": {
+        "friends": [
+            "Маруся",
+            "Катя",
+            "Durov"
+        ]
+    },
+    "Маруся": {
+        "friends": [
+            "Феня",
+            "Катя"
+        ]
+    },
+    "Катя": {
+        "friends": [
+            "Феня",
+            "Маруся",
+            "Durov"
+        ]
+    },
+    "Vladimir Putin": {
+        "friends": [
+            "Donald Trump",
+            "Kim Chen In"
+        ]
+    },
+    "Donald Trump": {
+        "friends": [
+            "Vladimir Putin"
+        ]
+    },
+    "Kim Chen In": {
+        "friends": [
+            "Vladimir Putin"
+        ]
+    },
+    "Ал": {
+        "friends": [
+            "Durov"
+        ]
+    }
+}

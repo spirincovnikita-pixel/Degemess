@@ -1,0 +1,310 @@
+{
+    "Durov-ILON_MASK": [
+        {
+            "sender": "Durov",
+            "message": "ку",
+            "timestamp": "12:12:18"
+        },
+        {
+            "sender": "ILON_MASK",
+            "message": "привет4",
+            "timestamp": "12:13:23"
+        },
+        {
+            "sender": "ILON_MASK",
+            "message": "ку",
+            "timestamp": "12:21:59"
+        },
+        {
+            "sender": "Durov",
+            "message": "да да?",
+            "timestamp": "12:22:09"
+        },
+        {
+            "sender": "ILON_MASK",
+            "message": "че делаешь?",
+            "timestamp": "12:22:18"
+        },
+        {
+            "sender": "ILON_MASK",
+            "message": "ддб",
+            "timestamp": "12:26:59"
+        },
+        {
+            "sender": "ILON_MASK",
+            "message": "ку",
+            "timestamp": "12:33:04"
+        },
+        {
+            "sender": "Durov",
+            "message": "да?",
+            "timestamp": "12:33:12"
+        },
+        {
+            "sender": "Durov",
+            "message": "?",
+            "timestamp": "12:33:43"
+        },
+        {
+            "sender": "ILON_MASK",
+            "message": "?",
+            "timestamp": "12:33:48"
+        },
+        {
+            "sender": "ILON_MASK",
+            "message": "ты тут?",
+            "timestamp": "12:34:07"
+        },
+        {
+            "sender": "Durov",
+            "message": "Тут",
+            "timestamp": "12:34:11"
+        },
+        {
+            "sender": "ILON_MASK",
+            "message": "Странно",
+            "timestamp": "12:34:16"
+        },
+        {
+            "sender": "Durov",
+            "message": "Че",
+            "timestamp": "12:34:19"
+        }
+    ],
+    "Елена-Durov": [
+        {
+            "sender": "Елена",
+            "message": "привет",
+            "timestamp": "12:14:47"
+        },
+        {
+            "sender": "Durov",
+            "message": "знакомы?",
+            "timestamp": "12:15:04"
+        },
+        {
+            "sender": "Елена",
+            "message": "да",
+            "timestamp": "12:15:08"
+        },
+        {
+            "sender": "Durov",
+            "message": "ну хорошо",
+            "timestamp": "12:15:13"
+        },
+        {
+            "sender": "Елена",
+            "message": "дарова",
+            "timestamp": "12:27:22"
+        },
+        {
+            "sender": "Durov",
+            "message": "спишь?",
+            "timestamp": "12:28:09"
+        },
+        {
+            "sender": "Durov",
+            "message": "ленусик, привет",
+            "timestamp": "12:34:32"
+        },
+        {
+            "sender": "Елена",
+            "message": "привет",
+            "timestamp": "12:34:40"
+        }
+    ],
+    "ILON_MASK-Durov": [
+        {
+            "sender": "Durov",
+            "message": "привет",
+            "timestamp": "12:52:56"
+        },
+        {
+            "sender": "Durov",
+            "message": "привет",
+            "timestamp": "12:53:01"
+        },
+        {
+            "sender": "Durov",
+            "message": "ку",
+            "timestamp": "12:53:09"
+        }
+    ],
+    "В-Ы": [
+        {
+            "sender": "Ы",
+            "message": "привет",
+            "timestamp": "00:03:23"
+        }
+    ],
+    "group_group_1": [
+        {
+            "sender": "Ы",
+            "message": "привет",
+            "timestamp": "00:04:13"
+        }
+    ],
+    "Маруся-Феня": [
+        {
+            "sender": "Феня",
+            "message": "Привет",
+            "timestamp": "00:16:08"
+        },
+        {
+            "sender": "Маруся",
+            "message": "Привет Феня",
+            "timestamp": "00:16:25"
+        },
+        {
+            "sender": "Феня",
+            "message": "ку",
+            "timestamp": "15:16:09"
+        },
+        {
+            "sender": "Маруся",
+            "message": "приыет",
+            "timestamp": "15:16:15"
+        }
+    ],
+    "group_group_2": [
+        {
+            "sender": "Маруся",
+            "message": "привет",
+            "timestamp": "00:17:03"
+        },
+        {
+            "sender": "Феня",
+            "message": "привет",
+            "timestamp": "00:17:07"
+        },
+        {
+            "sender": "Катя",
+            "message": "Привет",
+            "timestamp": "00:18:01"
+        }
+    ],
+    "Donald Trump-Vladimir Putin": [
+        {
+            "sender": "Donald Trump",
+            "message": "Володя, привет!",
+            "timestamp": "10:04:05"
+        },
+        {
+            "sender": "Vladimir Putin",
+            "message": "Здравствуй Дональд",
+            "timestamp": "10:04:14"
+        },
+        {
+            "sender": "Donald Trump",
+            "message": "Есть юсер Ким Чен Ына?",
+            "timestamp": "10:04:28"
+        },
+        {
+            "sender": "Vladimir Putin",
+            "message": "Зачем тебе?",
+            "timestamp": "10:04:35"
+        },
+        {
+            "sender": "Donald Trump",
+            "message": "Группу сделать хочу, есть?",
+            "timestamp": "10:04:47"
+        },
+        {
+            "sender": "Vladimir Putin",
+            "message": "Давай я сделаю и добавлю его туда",
+            "timestamp": "10:04:59"
+        },
+        {
+            "sender": "Donald Trump",
+            "message": "ну ладно",
+            "timestamp": "10:05:03"
+        }
+    ],
+    "Kim Chen In-Vladimir Putin": [
+        {
+            "sender": "Kim Chen In",
+            "message": "О, здравствуй дорогой",
+            "timestamp": "10:05:43"
+        },
+        {
+            "sender": "Vladimir Putin",
+            "message": "Привет! Сейчас добавлю тебя в нашу группу?",
+            "timestamp": "10:05:58"
+        },
+        {
+            "sender": "Kim Chen In",
+            "message": "Зачiм?",
+            "timestamp": "10:06:07"
+        }
+    ],
+    "group_group_3": [
+        {
+            "sender": "Kim Chen In",
+            "message": "приветствую, а кто в этой группе есть?",
+            "timestamp": "10:06:53"
+        },
+        {
+            "sender": "Donald Trump",
+            "message": "о, привет",
+            "timestamp": "10:07:04"
+        },
+        {
+            "sender": "Kim Chen In",
+            "message": "Блядь, иди нахуй. Володя, выгони меня отсюда",
+            "timestamp": "10:07:17"
+        },
+        {
+            "sender": "Vladimir Putin",
+            "message": "Узбагоiтесь",
+            "timestamp": "10:07:33"
+        }
+    ],
+    "group_group_4": [
+        {
+            "sender": "Durov",
+            "message": "привет",
+            "timestamp": "15:21:04"
+        }
+    ],
+    "Durov-Феня": [
+        {
+            "sender": "Durov",
+            "message": "ку",
+            "timestamp": "17:28:07"
+        },
+        {
+            "sender": "Durov",
+            "message": "аа",
+            "timestamp": "17:35"
+        },
+        {
+            "sender": "Durov",
+            "message": "а",
+            "timestamp": "17:35"
+        }
+    ],
+    "Durov-Катя": [
+        {
+            "sender": "Durov",
+            "message": "привет",
+            "timestamp": "19:25"
+        },
+        {
+            "sender": "Катя",
+            "message": "ку",
+            "timestamp": "19:25"
+        }
+    ],
+    "Durov-Ал": [
+        {
+            "sender": "Ал",
+            "message": "ку",
+            "timestamp": "19:26"
+        },
+        {
+            "sender": "Durov",
+            "message": "ку",
+            "timestamp": "19:26"
+        }
+    ]
+}

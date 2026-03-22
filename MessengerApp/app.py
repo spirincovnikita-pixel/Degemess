@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_socketio import SocketIO, emit, join_room, leave_room
 import json
 import os
-from datetime import datetime
+from datetime import datetime  # Для времени создания
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'supersecretkey123'
@@ -13,9 +13,6 @@ USERS_FILE = 'users.json'
 FRIENDS_FILE = 'friends.json'
 GROUPS_FILE = 'groups.json'
 CHATS_FILE = 'chats.json'
-CHANNELS_FILE = 'channels.json'  # Новый файл для каналов
-
-# === Загрузка и сохранение данных ===
 
 def load_users():
     if os.path.exists(USERS_FILE):
@@ -57,22 +54,8 @@ def save_chats(chats):
     with open(CHATS_FILE, 'w', encoding='utf-8') as f:
         json.dump(chats, f, ensure_ascii=False, indent=4)
 
-def load_channels():
-    """Загружает каналы из файла"""
-    if os.path.exists(CHANNELS_FILE):
-        with open(CHANNELS_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return {}
-
-def save_channels(channels):
-    """Сохраняет каналы в файл"""
-    with open(CHANNELS_FILE, 'w', encoding='utf-8') as f:
-        json.dump(channels, f, ensure_ascii=False, indent=4)
-
 # Онлайн-пользователи
 online_users = {}
-
-# === Маршруты ===
 
 @app.route('/')
 def index():
@@ -188,7 +171,7 @@ def create_group():
         "name": name,
         "creator": creator,
         "members": [creator],
-        "admins": [creator],
+        "admins": [creator],  # Создатель — админ
         "created_at": datetime.now().strftime("%H:%M")
     }
 
@@ -337,47 +320,6 @@ def get_group_messages(group_id):
     chats = load_chats()
     return jsonify(chats.get(f"group_{group_id}", []))
 
-# === Каналы: новая функциональность ===
-
-@app.route('/create_channel', methods=['POST'])
-def create_channel():
-    """
-    Создание канала.
-    Только создатель — админ. Других админов назначать нельзя.
-    """
-    data = request.get_json()
-    creator = data['creator']
-    name = data['name'].strip()
-
-    if not name:
-        return jsonify({'success': False, 'message': 'Введите название канала'})
-
-    channels = load_channels()
-    channel_id = f"channel_{len(channels) + 1}"
-    while channel_id in channels:
-        channel_id = f"channel_{len(channels) + 1}"
-
-    # Создаём канал: только создатель, нет подписчиков (пока), нет админов кроме создателя
-    channels[channel_id] = {
-        "name": name,
-        "creator": creator,
-        "created_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
-        "description": ""  # Можно будет расширить позже
-    }
-
-    save_channels(channels)
-
-    # Оповещаем создателя через SocketIO
-    if creator in online_users:
-        socketio.emit('channel_created', {
-            'channel_id': channel_id,
-            'channel': channels[channel_id]
-        }, room=creator)
-
-    return jsonify({'success': True, 'channel_id': channel_id, 'channel': channels[channel_id]})
-
-# === Сохранение сообщений ===
-
 def save_message(sender, receiver, message, timestamp):
     chats = load_chats()
     key = f"{min(sender, receiver)}-{max(sender, receiver)}"
@@ -393,8 +335,6 @@ def save_group_message(group_id, sender, message, timestamp):
         chats[key] = []
     chats[key].append({'sender': sender, 'message': message, 'timestamp': timestamp})
     save_chats(chats)
-
-# === SocketIO события ===
 
 @socketio.on('login')
 def handle_login(data):
@@ -454,9 +394,11 @@ def handle_send_group_message(data):
     for member in groups[group_id]['members']:
         emit('receive_group_message', data, room=member)
 
-# === Запуск приложения ===
-
 if __name__ == '__main__':
-    socketio.run(app, host='127.0.0.1', port=5000, debug=True)
+    import os
+    port = int(os.environ.get('PORT', 5000))
+    socketio.run(app, host='0.0.0.0', port=port)
+
+
 
 
